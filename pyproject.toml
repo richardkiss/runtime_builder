@@ -1,0 +1,13 @@
+[project]
+name = "runtime_builder"
+description = "Allow automatic builds in edit mode"
+authors = [{name = "Richard Kiss", email = "<him@richardkiss.com>"}]
+license = "Apache-2.0"
+readme = "README.md"
+src_root = "."
+packages = ["runtime_builder"]
+version = "0.1.0"
+
+[build-system]
+requires = ["pytoml>=0.1", "enscons"]
+build-backend = "enscons.api"

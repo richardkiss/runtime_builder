@@ -1,0 +1,18 @@
+[project]
+name = "proj-test"
+description = ""
+authors = []
+readme = "README.md"
+#packages = ["proj"]
+version = "0.1.0"
+scripts = {"run-test" = "proj.run_test:main"}
+#include = "proj"
+
+#[tool.setuptools.packages.find]
+#exclude = ["*dynamic_build.py"]
+
+[build-system]
+#requires = ["setuptools", "setuptools-scm"]
+#build-backend = "setuptools.build_meta"
+requires = ["pytoml>=0.1", "enscons", "clvm_tools_rs", "runtime_builder @ file://RUNTIME_BUILDER_ROOT"]
+build-backend = "enscons.api"

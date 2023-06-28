@@ -1,0 +1,13 @@
+[project]
+name = "chialisp_builder"
+description = ""
+authors = []
+readme = "README.md"
+version = "0.1.0"
+dependencies = ["clvm_tools_rs", "runtime_builder @ git+ssh://git@github.com/richardkiss/runtime_builder.git#egg=runtime_builder"]
+
+[build-system]
+#requires = ["setuptools", "setuptools-scm"]
+#build-backend = "setuptools.build_meta"
+requires = ["pytoml>=0.1", "enscons"]
+build-backend = "enscons.api"

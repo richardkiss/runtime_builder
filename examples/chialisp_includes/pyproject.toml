@@ -1,0 +1,12 @@
+[project]
+name = "chialisp_includes"
+description = "Exports Chialisp `.clib` files"
+authors = [{name = "Richard Kiss", email = "<him@richardkiss.com>"}]
+license = "Apache-2.0"
+readme = { text = "" }
+packages = ["chialisp_includes"]
+version = "0.1.0"
+
+[build-system]
+requires = ["pytoml>=0.1", "enscons"]
+build-backend = "enscons.api"

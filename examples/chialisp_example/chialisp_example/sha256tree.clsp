@@ -1,0 +1,5 @@
+(mod (A)
+    (include "sha256tree.clinc")
+
+    (shatree A)
+)

@@ -1,0 +1,22 @@
+[project]
+name = "chialisp_example"
+description = "Example that uses `chialisp_library` and shows how an optimal edit/test cycle, building just the minimum necessary"
+authors = [{name = "Richard Kiss", email = "<him@richardkiss.com>"}]
+license = "Apache-2.0"
+readme = { text = "" }
+src_root = "."
+packages = ["chialisp_example"]
+version = "0.1.0"
+dependencies = ["clvm_rs"]
+
+[project.entry_points]
+console_scripts = ["shatree = chialisp_example.shatree:main"]
+
+[build-system]
+requires = [
+    "pytoml>=0.1",
+    "enscons",
+    "chialisp_builder @ git+ssh://git@github.com/richardkiss/runtime_builder.git#egg=chialisp_builder&subdirectory=examples/chialisp_builder",
+    "chialisp_includes @ git+ssh://git@github.com/richardkiss/runtime_builder.git#egg=chialisp_includes&subdirectory=examples/chialisp_includes",
+]
+build-backend = "enscons.api"
