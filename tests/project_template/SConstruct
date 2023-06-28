@@ -1,0 +1,44 @@
+# Starter SConstruct for enscons
+
+import enscons
+import pytoml
+from runtime_builder import build_all_items_for_package
+
+
+metadata = dict(pytoml.load(open("pyproject.toml")))["project"]
+
+full_tag = "py3-none-any"  # pure Python packages compatible with 2+3
+
+env = Environment(
+    tools=["default", "packaging", enscons.generate],
+    PACKAGE_METADATA=metadata,
+    WHEEL_TAG=full_tag,
+    ROOT_IS_PURELIB=full_tag.endswith("-any"),
+)
+
+py_source = list(
+    Glob("proj/run_test.py"),
+)
+
+other_source = (
+    "proj/foo", "proj/program.clsp", "proj/bar.txt"
+)
+
+built_items = build_all_items_for_package("proj")
+# convert `Path` to `str` as scons can't handle `Path` objects
+built_items = [str(_) for _ in built_items]
+
+wheel_contents = py_source + built_items
+
+source = env.Whl("purelib", wheel_contents, root="")
+whl = env.WhlFile(source=source)
+
+sdist_source = (
+    File(["PKG-INFO", "README.md", "SConstruct", "pyproject.toml"]) + py_source
+)
+sdist = env.SDist(source=sdist_source)
+env.NoClean(sdist)
+env.Alias("sdist", sdist)
+
+# needed for pep517 (enscons.api) to work
+env.Default(whl, sdist)
