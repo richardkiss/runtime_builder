@@ -3,7 +3,7 @@ name = "runtime_builder"
 description = "Allow automatic builds in edit mode"
 authors = [{name = "Richard Kiss", email = "him@richardkiss.com"}]
 readme = "README.md"
-version = "0.1.0"
+version = "0.1.1"
 
 
 [build-system]

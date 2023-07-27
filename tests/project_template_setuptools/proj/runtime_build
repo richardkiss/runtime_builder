@@ -1,0 +1,26 @@
+from pathlib import Path
+from typing import Callable
+
+
+class MultiplyBuild:
+    def __init__(self, factor: int) -> None:
+        self.factor = factor
+
+    def __call__(self, target_path: Path):
+        source_path = target_path.with_suffix(".source")
+        t = int(open(source_path).read())
+        with open(target_path, "w") as f:
+            f.write(f"{t * self.factor}")
+
+
+def count_build(target_path: Path) -> None:
+    source_path = target_path.with_suffix(".source")
+    t = open(source_path).read()
+    with open(target_path, "w") as f:
+        f.write(f"{len(t)}\n")
+
+
+BUILD_ARGUMENTS: dict[str, Callable[[Path], None]] = {
+    "foo.val": MultiplyBuild(50),
+    "bar.count": count_build,
+}
