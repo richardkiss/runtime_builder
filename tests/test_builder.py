@@ -23,7 +23,7 @@ def run_shell_test(script_name: str, src_name: Path):
 
 
 def test_enscons_build():
-    run_shell_test("test_pip_install.sh", "project_template_enscons")
+    run_shell_test("test_pip_install_editable.sh", "project_template_enscons")
 
 
 def test_enscons_build_editable():

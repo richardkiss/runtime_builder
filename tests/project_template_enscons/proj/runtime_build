@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Dict
 
 
 class MultiplyBuild:
@@ -20,7 +20,7 @@ def count_build(target_path: Path) -> None:
         f.write(f"{len(t)}\n")
 
 
-BUILD_ARGUMENTS: dict[str, Callable[[Path], None]] = {
+BUILD_ARGUMENTS: Dict[str, Callable[[Path], None]] = {
     "foo.val": MultiplyBuild(50),
     "bar.count": count_build,
 }

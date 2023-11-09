@@ -3,16 +3,22 @@ from pathlib import Path
 from os import PathLike
 from setuptools import Command
 from setuptools.command.build import build
-from typing import Any, Callable, List, Union
+from typing import Any, Callable, Dict, List, Union
 
-PathType = str | PathLike[Any]
+try:
+    PathType = str | PathLike[Any]
+except TypeError:
+    # `PathLike[Any]` not supported until 3.9
+    # `str | None` syntax not supported until 3.10
+    PathType = Union[str, PathLike]
+
 
 DEFAULT_FN = "runtime_build"
 
 
-def load_python_config(config_file_path: Path, local_variable_name: str) -> dict:
+def load_python_config(config_file_path: Path, local_variable_name: str) -> Dict:
     config_file_contents = config_file_path.read_text()
-    context: dict[str, Any] = dict(__file__=str(config_file_path.resolve()))
+    context: Dict[str, Any] = dict(__file__=str(config_file_path.resolve()))
     exec(config_file_contents, context)
     return context.get(local_variable_name, {})
 
@@ -26,7 +32,7 @@ def base_for_package(package: Package, src_root: PathType) -> Path:
 
 def load_build_args_for_package(
     package: Package, build_file_name: PathType, src_root: PathType
-) -> dict[PathType, Callable[[Path], Path]]:
+) -> Dict[PathType, Callable[[Path], Path]]:
     build_path = base_for_package(package, src_root) / build_file_name
     return load_python_config(build_path, "BUILD_ARGUMENTS")
 
@@ -116,6 +122,6 @@ def build_runtime_setuptools(*all_packages: List[Package]) -> Command:
         def run(self):
             # Custom code to generate the .hex files
             for package in all_packages:
-                built_items = build_all_items_for_package(package)
+                _built_items = build_all_items_for_package(package)
 
     return BuildRuntimeBuilderArtifactsCommand
