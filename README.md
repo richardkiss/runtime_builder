@@ -10,6 +10,7 @@ This project lets you declare a single configuration describing how to build the
 
 There are example projects in `tests/project_template_enscons` and `tests/project_template_setuptools`.
 
+```
 tests/project_template_setuptools
 ├── README.md
 ├── proj
@@ -21,10 +22,11 @@ tests/project_template_setuptools
 ├── setup.py
 ├── test_pip_install.sh
 └── test_pip_install_editable.sh
+```
 
 This examples uses `setuptools` and `setup.py` to build. The `setup.py` and `runtime_build` files work together to make available artifacts built from the `.source` files.
 
-
+```
 project_template_enscons
 ├── README.md
 ├── SConstruct
@@ -36,6 +38,7 @@ project_template_enscons
 ├── pyproject.toml.template
 ├── test_pip_install.sh
 └── test_pip_install_editable.sh
+```
 
 Note that this example uses `enscons` to build, as `setuptools` does not easily allow fine-grained control of the contents of the `sdist` and `wheel` files. In particular, this example takes pains to include the source files `runtime_build`, `foo.source` and `bar.source` in the sdist but not the wheel.
 
