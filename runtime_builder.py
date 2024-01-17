@@ -1,9 +1,12 @@
-from importlib.resources import Package
 from pathlib import Path
 from os import PathLike
 from setuptools import Command
 from setuptools.command.build import build
 from typing import Any, Callable, Dict, List, Union
+from warnings import warn
+
+from importlib_resources import Package, files
+from importlib_resources.abc import Traversable
 
 try:
     PathType = str | PathLike[Any]
@@ -12,38 +15,27 @@ except TypeError:
     # `str | None` syntax not supported until 3.10
     PathType = Union[str, PathLike]
 
+Builder = Callable[[Path], None]
+
 
 DEFAULT_FN = "runtime_build"
 
 
-def load_python_config(config_file_path: Path, local_variable_name: str) -> Dict:
+def load_python_config(
+    config_file_path: Traversable, local_variable_name: str = "BUILD_ARGUMENTS"
+) -> Dict:
     config_file_contents = config_file_path.read_text()
     context: Dict[str, Any] = dict(__file__=str(config_file_path.resolve()))
     exec(config_file_contents, context)
     return context.get(local_variable_name, {})
 
 
-def base_for_package(package: Package, src_root: PathType) -> Path:
-    base_path = Path(src_root).resolve()
-    for package_part in package.split("."):
-        base_path /= package_part
-    return base_path
-
-
-def load_build_args_for_package(
-    package: Package, build_file_name: PathType, src_root: PathType
-) -> Dict[PathType, Callable[[Path], Path]]:
-    build_path = base_for_package(package, src_root) / build_file_name
-    return load_python_config(build_path, "BUILD_ARGUMENTS")
-
-
 def build_item(
-    package: Package,
+    package_base: Traversable,
     base_name: PathType,
-    builder: Callable[[Path], Path],
-    src_root: PathType,
+    builder: Builder,
 ) -> Path:
-    target_path = base_for_package(package, src_root) / base_name
+    target_path = package_base / base_name
     builder(target_path)
     return target_path
 
@@ -52,37 +44,44 @@ def build_on_demand(
     package: Package,
     base_name: PathType,
     build_file_name: PathType = DEFAULT_FN,
-    src_root: PathType = ".",
 ):
-    build_args = load_build_args_for_package(package, build_file_name, src_root)
+    fp = files(package)
+    build_path = fp / build_file_name
+    try:
+        build_args = load_python_config(build_path)
+    except FileNotFoundError:
+        warn(f"can't find {build_path}, runtime build skipped", RuntimeWarning)
+        return None
     builder = build_args.get(base_name)
     if builder is None:
         raise ValueError(f"unknown resource {base_name}")
-    return build_item(package, base_name, builder, src_root)
-
-
-def build_all_at_build_time(
-    packages: List[Package],
-    build_file_name: PathType = DEFAULT_FN,
-    src_root: PathType = ".",
-) -> List[Path]:
-    built = []
-    for package in packages:
-        built.extend(build_all_items_for_package(package, build_file_name, src_root))
-    return built
+    try:
+        return build_item(files(package), base_name, builder)
+    except FileNotFoundError:
+        warn(
+            f"can't find source file {base_name}, runtime build skipped", RuntimeWarning
+        )
 
 
 def build_all_items_for_package(
-    package: Package, build_file_name: PathType = DEFAULT_FN, src_root: PathType = "."
+    package: str, package_dir: Dict[str, str] = {}
 ) -> List[Path]:
-    build_args = load_build_args_for_package(package, build_file_name, src_root)
+    package_base = package_base_for_package(package, package_dir)
+    return build_all_items_for_package_base(package_base)
+
+
+def build_all_items_for_package_base(
+    package_base: Traversable,
+    build_file_name: PathType = DEFAULT_FN,
+) -> List[Path]:
+    build_args = load_python_config(package_base / build_file_name)
     return [
-        build_item(package, base_name, builder, src_root)
+        build_item(package_base, base_name, builder)
         for base_name, builder in build_args.items()
     ]
 
 
-def build_runtime_setuptools(*all_packages: List[Package]) -> Command:
+def build_runtime_setuptools(*all_packages: List[str]) -> Command:
     """
     Use this in `setup.py` as follows:
 
@@ -121,7 +120,26 @@ def build_runtime_setuptools(*all_packages: List[Package]) -> Command:
 
         def run(self):
             # Custom code to generate the .hex files
+            package_dir = self.distribution.package_dir
             for package in all_packages:
-                _built_items = build_all_items_for_package(package)
+                package_base = package_base_for_package(package, package_dir)
+                _built_items = build_all_items_for_package_base(package_base)
 
     return BuildRuntimeBuilderArtifactsCommand
+
+
+def package_base_for_package(
+    package: str, package_dir: Dict[str, PathType]
+) -> Traversable:
+    components = package.split(".")
+    loop = list(components)
+    base = Path(package_dir.get("", "."))
+    suffix = package
+    while loop:
+        prefix = ".".join(loop)
+        if prefix in package_dir:
+            raise ValueError(
+                'package_dir mappings besides {"" : SOME_PATH} not yet supported'
+            )
+        loop.pop()
+    return base / suffix

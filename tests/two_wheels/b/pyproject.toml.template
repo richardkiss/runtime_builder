@@ -1,0 +1,10 @@
+[project]
+name = "proj-b"
+description = ""
+authors = []
+readme = "README.md"
+version = "0.1.0"
+
+[build-system]
+requires = ["setuptools>=42", "wheel", "runtime_builder @ file://RUNTIME_BUILDER_ROOT"]
+build-backend = "setuptools.build_meta"

@@ -1,0 +1,14 @@
+from pathlib import Path
+from typing import Callable, Dict
+
+
+def count_build(target_path: Path) -> None:
+    source_path = target_path.with_suffix(".source")
+    t = open(source_path).read()
+    with open(target_path, "w") as f:
+        f.write(f"{t} has {len(t)} characters\n")
+
+
+BUILD_ARGUMENTS: Dict[str, Callable[[Path], None]] = {
+    "bar_b.count": count_build,
+}

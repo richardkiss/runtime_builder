@@ -1,0 +1,12 @@
+[project]
+name = "proj-a"
+description = ""
+authors = []
+readme = "README.md"
+version = "0.1.0"
+scripts = {"run-a" = "proj_a.main_a:main"}
+dependencies = ["proj_b @ file://TEMP_DIRECTORY_ROOT/b"]
+
+[build-system]
+requires = ["setuptools>=42", "wheel", "runtime_builder @ file://RUNTIME_BUILDER_ROOT"]
+build-backend = "setuptools.build_meta"

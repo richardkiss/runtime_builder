@@ -15,7 +15,7 @@ sed "s|RUNTIME_BUILDER_ROOT|${RUNTIME_BUILDER_ROOT}|" <pyproject.toml.template >
 pip install --no-cache-dir -e .
 
 BASE_DIR=$(pwd)
-#cd /
+cd /
 
 run-test-setuptools 250
 

@@ -36,3 +36,18 @@ def test_setuptools_build():
 
 def test_setuptools_build_editable():
     run_shell_test("test_pip_install_editable.sh", "project_template_setuptools")
+
+
+"""
+v0.1.3 and prior have a bug where if wheel A uses wheel B and both use
+runtime_builder then when A is installed, the use of B fails. These "two_wheel"
+tests cover this case.
+"""
+
+
+def test_two_wheels_build():
+    run_shell_test("test_pip_install.sh", "two_wheels")
+
+
+def test_two_wheels_build_editable():
+    run_shell_test("test_pip_install_editable.sh", "two_wheels")
