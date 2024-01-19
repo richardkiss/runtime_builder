@@ -1,0 +1,18 @@
+from pathlib import Path
+from typing import Callable, Dict
+
+
+class AddBuild:
+    def __init__(self, addend: int) -> None:
+        self.addend = addend
+
+    def __call__(self, target_path: Path):
+        source_path = target_path.with_suffix(".source")
+        t = int(open(source_path).read())
+        with open(target_path, "w") as f:
+            f.write(f"{t + self.addend}")
+
+
+BUILD_ARGUMENTS: Dict[str, Callable[[Path], None]] = {
+    "baz_a.val": AddBuild(111),
+}

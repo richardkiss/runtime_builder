@@ -134,7 +134,7 @@ def package_base_for_package(
     components = package.split(".")
     loop = list(components)
     base = Path(package_dir.get("", "."))
-    suffix = package
+    suffix = Path(*components)
     while loop:
         prefix = ".".join(loop)
         if prefix in package_dir:

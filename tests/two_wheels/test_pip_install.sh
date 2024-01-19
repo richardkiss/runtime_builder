@@ -16,8 +16,8 @@ sed -e "s|TEMP_DIRECTORY_ROOT|$(pwd)|" -e "s|RUNTIME_BUILDER_ROOT|${RUNTIME_BUIL
 sed "s|RUNTIME_BUILDER_ROOT|${RUNTIME_BUILDER_ROOT}|" < b/pyproject.toml.template > b/pyproject.toml
 
 pip install -vv ./a
-run-a 450
+run-a 450 181
 pip install ${RUNTIME_BUILDER_ROOT}
-run-a 450
+run-a 450 181
 echo ${?}
 

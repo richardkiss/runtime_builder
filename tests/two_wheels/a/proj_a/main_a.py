@@ -22,11 +22,19 @@ def load_resource(
 
 
 def main():
-    bar = load_resource("bar_b.count", "proj_b")
+    bar = proj_b.load_resource("bar_b.count", "proj_b")
     assert bar == b"hello from b\n has 13 characters\n"
-    val = proj_b.load_resource("foo.val", __package__)
-    print(f"TEST: running main proj_a: val={val.decode()} vs {sys.argv[1]}")
-    assert val.decode() == sys.argv[1]
+
+    foo = load_resource("foo.val", __package__)
+    baz = load_resource("baz_a.val", "proj_a.next")
+
+    print(
+        f"TEST: running main proj_a: foo={foo.decode()} vs {sys.argv[1]};"
+        f" baz={baz.decode()} vs {sys.argv[2]}"
+    )
+
+    assert foo.decode() == sys.argv[1]
+    assert baz.decode() == sys.argv[2]
 
 
 if __name__ == "__main__":

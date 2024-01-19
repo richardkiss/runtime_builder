@@ -16,38 +16,43 @@ sed -e "s|TEMP_DIRECTORY_ROOT|$(pwd)|" -e "s|RUNTIME_BUILDER_ROOT|${RUNTIME_BUIL
 sed "s|RUNTIME_BUILDER_ROOT|${RUNTIME_BUILDER_ROOT}|" < b/pyproject.toml.template > b/pyproject.toml
 
 pip install -vv -e ./a
-run-a 450
+run-a 450 181
 
 A_BASE=a/proj_a/
 B_BASE=$(dirname $(python3 -c 'import proj_b; print(proj_b.__file__)'))
 
 
-run-a 450
+run-a 450 181
 echo 31 >${A_BASE}/foo.source
-run-a 450
+run-a 450 181
 echo 20 >${A_BASE}/foo.source
-run-a 450
+run-a 450 181
 echo 40 >${A_BASE}/foo.source
-run-a 450
+run-a 450 181
+echo 20 >${A_BASE}/next/baz_a.source
+run-a 450 181
 
 pip install ${RUNTIME_BUILDER_ROOT}
 
-run-a 2000
+run-a 2000 131
 echo 31 >${A_BASE}/foo.source
-run-a 1550
+run-a 1550 131
 echo 20 >${A_BASE}/foo.source
-run-a 1000
+run-a 1000 131
+
+echo 50 >${A_BASE}/next/baz_a.source
+run-a 1000 161
 
 # a missing `runtime_build` or source file should give a warning
 #
 mv ${B_BASE}/bar_b.source  ${B_BASE}/bar_b.source.missing
-run-a 1000
+run-a 1000 161
 
 mv ${B_BASE}/bar_b.source.missing  ${B_BASE}/bar_b.source
-run-a 1000
+run-a 1000 161
 
 mv ${B_BASE}/runtime_build ${B_BASE}/runtime_build.missing
-run-a 1000
+run-a 1000 161
 
 mv ${B_BASE}/bar_b.source  ${B_BASE}/bar_b.source.missing
-run-a 1000
+run-a 1000 161
